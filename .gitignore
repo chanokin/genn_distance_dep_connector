@@ -1,0 +1,10 @@
+.idea/
+Results/
+__pycache__/
+*.log
+*.pdf
+*_CODE/
+genn/
+pynn_genn/
+venv?/
+.pytest/
