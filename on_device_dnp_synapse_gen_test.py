@@ -14,12 +14,16 @@ timestep = 1.
 sim.setup(timestep)
 
 n_z = 5#20
-n_pre = (10, 10)
-shape_post = (10, 10, n_z)
+n_pre = (15, 15)
+shape_post = (15, 15, n_z)
 n_post = int(np.prod(shape_post))
 ratioXY = float(shape_post[0])/shape_post[1]
 ratioXZ = float(shape_post[0])/shape_post[2]
-structure = Grid3D(ratioXY, ratioXZ, dz=0.001 * (1./n_z))
+dx = n_pre[1] / shape_post[1]
+dy = n_pre[0] / shape_post[0]
+structure = Grid3D(ratioXY, ratioXZ,
+                   #x0=dx/2., y0=dy/2.,
+                   dx=dx, dy=dy, dz=0.0001 * (1./n_z))
 params = copy.copy(sim.IF_curr_exp.default_parameters)
 pre = sim.Population(n_pre, sim.IF_curr_exp, params,
                      label='pre')
@@ -30,9 +34,11 @@ dist_params = {'low': 0.0, 'high': 10.0}
 dist = 'uniform'
 rand_dist = RandomDistribution(dist, rng=rng, **dist_params)
 var = 'weight'
-conn = MaxDistanceFixedProbabilityConnector(3, 0.95, rng=rng)
+conn = MaxDistanceFixedProbabilityConnector(5., 0.5, rng=rng)
 syn = sim.StaticSynapse(weight=3, delay=1)
-proj = sim.Projection(pre, post, conn, synapse_type=syn)
+proj = sim.Projection(pre, post, conn, synapse_type=syn,
+                      # use_procedural=True
+                      )
 
 sim.run(10)
 
